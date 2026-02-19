@@ -2,6 +2,9 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import java.time.Duration;
 
 // this class is like a dictionary. It tells your code: "When I say 'usernameField', I mean this specific box on the screen."
 // its a helper class, it doesnt actually have its own browser going on
@@ -18,8 +21,10 @@ public class LoginPage {
 
     private By usernameField = By.name("username"); // tells Selenium to look for an HTML tag where name="username"
     private By passwordField = By.name("password");
-    private By loginButton = By.xpath("//input[@value='Log In']"); // tells Selenium to look for an <input> tag that has the
+    private By loginButton = By.cssSelector("input[value='Log In']"); // tells Selenium to look for an <input> tag that has the
     // text "Log In" on it
+
+    private By errorMessage = By.xpath("//p[contains(text(), 'verified')]");
 
     public LoginPage(WebDriver driver) // the constructor
     {
@@ -38,9 +43,24 @@ public class LoginPage {
         // .findElement is like actually adding action to the shopping list, finding the item (from the By locator)
         // send keys sends a sequence of keyboard events to that specific HTML element
         // we dont use setText because sendKeys mimics a real keyboard. It triggers Key down and Key Up events in the browsers background
+
         driver.findElement(usernameField).sendKeys(user);
+
         driver.findElement(passwordField).sendKeys(pass);
+
         driver.findElement(loginButton).click();
+
+    }
+
+
+    public String getErrorMessageText()
+    {
+        // create a wait object that waits up to 10 seconds
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        // This waits for the specific red error text to appear on the screen
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("error"))).getText();
+
     }
 
 }
